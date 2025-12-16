@@ -23,12 +23,12 @@ final class ConfigProvider
     private function getCommands(): array
     {
         return [
-            Command\FetchContentCommand::NAME           => Command\FetchContentCommand::class,
-            'migration:generate'                        => Command\DatabaseMigrationGenerateCommand::class,
-            'migration:rollback'                        => Command\DatabaseMigrationRollbackCommand::class,
-            'migration:run'                             => Command\DatabaseMigrationRunCommand::class,
-            'migration:setup'                           => Command\DatabaseMigrationSetupCommand::class,
-            'migration:status'                          => Command\DatabaseMigrationStatusCommand::class,
+            Command\FetchContentCommand::NAME                           => Command\FetchContentCommand::class,
+            Command\DatabaseMigrationGenerateCommand::COMMAND_NAME      => Command\DatabaseMigrationGenerateCommand::class,
+            Command\DatabaseMigrationRollbackCommand::COMMAND_NAME      => Command\DatabaseMigrationRollbackCommand::class,
+            Command\DatabaseMigrationRunCommand::COMMAND_NAME           => Command\DatabaseMigrationRunCommand::class,
+            Command\DatabaseMigrationSetupCommand::COMMAND_NAME         => Command\DatabaseMigrationSetupCommand::class,
+            Command\DatabaseMigrationStatusCommand::COMMAND_NAME        => Command\DatabaseMigrationStatusCommand::class,
         ];
     }
 
@@ -37,9 +37,6 @@ final class ConfigProvider
         return [
             "delegators" => [
                 Command\FetchContentCommand::class => [
-                    \Marshal\EventManager\EventDispatcherDelegatorFactory::class,
-                ],
-                Command\DatabaseMigrationRunCommand::class => [
                     \Marshal\EventManager\EventDispatcherDelegatorFactory::class,
                 ],
                 Handler\ContentPageHandler::class => [
@@ -53,11 +50,11 @@ final class ConfigProvider
                 ],
             ],
             "factories" => [
-                Command\DatabaseMigrationGenerateCommand::class             => Command\DatabaseMigrationCommandFactory::class,
-                Command\DatabaseMigrationRollbackCommand::class             => Command\DatabaseMigrationCommandFactory::class,
-                Command\DatabaseMigrationRunCommand::class                  => Command\DatabaseMigrationCommandFactory::class,
-                Command\DatabaseMigrationStatusCommand::class               => Command\DatabaseMigrationCommandFactory::class,
-                Command\DatabaseMigrationStatusCommand::class               => Command\DatabaseMigrationCommandFactory::class,
+                Command\DatabaseMigrationGenerateCommand::class             => Command\DatabaseMigrationGenerateCommandFactory::class,
+                Command\DatabaseMigrationRollbackCommand::class             => Command\DatabaseMigrationRollbackCommandFactory::class,
+                Command\DatabaseMigrationRunCommand::class                  => Command\DatabaseMigrationRunCommandFactory::class,
+                Command\DatabaseMigrationSetupCommand::class                => Command\DatabaseMigrationSetupCommandFactory::class,
+                Command\DatabaseMigrationStatusCommand::class               => \Laminas\ServiceManager\Factory\InvokableFactory::class,
                 Command\FetchContentCommand::class                          => \Laminas\ServiceManager\Factory\InvokableFactory::class,
                 Handler\ContentPageHandler::class                           => Handler\ContentPageHandlerFactory::class,
                 Middleware\FinalResponseMiddleware::class                   => Middleware\FinalResponseMiddlewareFactory::class,

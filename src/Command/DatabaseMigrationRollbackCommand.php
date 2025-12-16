@@ -6,7 +6,6 @@ namespace Marshal\Application\Command;
 
 use Doctrine\DBAL\Schema\SchemaDiff;
 use Marshal\Utils\Database\ConnectionManager;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -17,9 +16,11 @@ final class DatabaseMigrationRollbackCommand extends Command
 {
     use DatabaseMigrationCommandTrait;
 
-    public function __construct(protected ContainerInterface $container, string $name)
+    public const string COMMAND_NAME = "migration:rollback";
+
+    public function __construct()
     {
-        parent::__construct($name);
+        parent::__construct(self::COMMAND_NAME);
     }
 
     public function configure(): void

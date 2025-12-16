@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Marshal\Application\Command;
 
 use Doctrine\DBAL\Schema\SchemaDiff;
-use Marshal\Utils\Database\ConnectionManager;
-use Marshal\ContentManager\Schema\SchemaManager;
-use Psr\Container\ContainerInterface;
+use Marshal\Application\Config;
+use Marshal\ContentManager\Schema\TypeManager;
+use Marshal\Utils\Database\DatabaseManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -18,9 +18,11 @@ class DatabaseMigrationGenerateCommand extends Command
 {
     use DatabaseMigrationCommandTrait;
 
-    public function __construct(protected ContainerInterface $container, string $name)
+    public const string COMMAND_NAME = "migration:generate";
+
+    public function __construct()
     {
-        parent::__construct($name);
+        parent::__construct(self::COMMAND_NAME);
     }
 
     public function configure(): void
@@ -42,6 +44,7 @@ class DatabaseMigrationGenerateCommand extends Command
         try {
             $diff = $this->generateMigration($database);
         } catch (\Throwable $e) {
+            $io->error("Error generating migration");
             $io->error($e->getMessage());
             return Command::FAILURE;
         }
@@ -52,7 +55,7 @@ class DatabaseMigrationGenerateCommand extends Command
         }
 
         // print statements
-        $connection = ConnectionManager::getConnection($database);
+        $connection = DatabaseManager::getConnection($database);
         $statements = $connection->getDatabasePlatform()->getAlterSchemaSQL($diff);
         $io->info("This migration will generate the following statements:");
         $io->info($statements);
@@ -72,7 +75,7 @@ class DatabaseMigrationGenerateCommand extends Command
         $normalizedName = $this->normalizeMigrationName($name);
 
         // save migration
-        $queryBuilder = ConnectionManager::getConnection()->createQueryBuilder();
+        $queryBuilder = DatabaseManager::getConnection()->createQueryBuilder();
         $save = $queryBuilder->insert('migration')
             ->setValue('name', $queryBuilder->createNamedParameter($normalizedName))
             ->setValue('db', $queryBuilder->createNamedParameter($database))
@@ -92,21 +95,18 @@ class DatabaseMigrationGenerateCommand extends Command
     {
         // gather the definitions
         $definitions = [];
-        $config =  $this->container->get('config')['schema']['types'] ?? [];
-        $typeManager = $this->container->get(SchemaManager::class);
-        \assert($typeManager instanceof SchemaManager);
+        $schema = Config::get('schema');
 
-        foreach (\array_keys($config) as $name) {
-            $nameSplit = \explode('::', $name);
-            if ($nameSplit[0] !== $database) {
+        foreach ($schema['types'] ?? [] as $name => $typeConfig) {
+            if (! isset($typeConfig['database']) || $typeConfig['database'] !== $database) {
                 continue;
             }
 
-            $definitions[] = $typeManager->get($name);
+            $definitions[$name] = TypeManager::get($name);
         }
 
         // generate the schema diff
-        $dbalSchema = ConnectionManager::getConnection($database)->createSchemaManager();
+        $dbalSchema = DatabaseManager::getConnection($database)->createSchemaManager();
         $fromSchema = $dbalSchema->introspectSchema();
         $toSchema = $this->buildContentSchema($definitions);
         return $dbalSchema->createComparator()->compareSchemas($fromSchema, $toSchema);

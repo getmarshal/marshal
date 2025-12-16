@@ -4,8 +4,7 @@ declare(strict_types= 1);
 
 namespace Marshal\Application\Command;
 
-use Marshal\Utils\Database\ConnectionManager;
-use Psr\Container\ContainerInterface;
+use Marshal\Utils\Database\DatabaseManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,9 +12,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 final class DatabaseMigrationStatusCommand extends Command
 {
-    public function __construct(protected ContainerInterface $container, string $name)
+    public const string COMMAND_NAME = "migration:status";
+
+    public function __construct()
     {
-        parent::__construct($name);
+        parent::__construct(self::COMMAND_NAME);
     }
 
     public function configure(): void
@@ -31,7 +32,7 @@ final class DatabaseMigrationStatusCommand extends Command
 
         // read migrations status
         try {
-            $connection = ConnectionManager::getConnection();
+            $connection = DatabaseManager::getConnection();
         } catch (\Throwable $e) {
             $io->error("Error connecting to database");
             $io->error($e->getMessage());

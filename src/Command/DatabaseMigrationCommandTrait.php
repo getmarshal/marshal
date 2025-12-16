@@ -37,6 +37,7 @@ trait DatabaseMigrationCommandTrait
                 }
 
                 // add column to table
+                // @todo handle exception thrown here
                 $table->addColumn(
                     name: $property->getName(),
                     typeName: $property->getDatabaseTypeName(),

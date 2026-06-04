@@ -1,2 +1,26 @@
+.*
 vendor/
+dev.php
+local.php
+*local.php
 
+/data/**
+/apps/**
+/public/uploads/**
+/public/static/**
+/template/**
+
+!.gitignore
+!/public/.htaccess
+!/data/
+!/apps/
+!/data/cache/
+!/public/static/
+!/public/uploads/
+!/template/main/app/*
+!/template/main/content/*
+!/template/main/settings/*
+!/template/main/tasks/*
+
+# module not ready
+Auth/

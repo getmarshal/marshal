@@ -1,33 +1,55 @@
 {
-    "name": "marshal/application",
-    "description": "Bootstrap a Marshal application",
-    "type": "library",
-    "license": "AGPL-3.0-or-later",
-    "autoload": {
-        "psr-4": {
-            "Marshal\\Application\\": "src/"
-        }
-    },
-    "authors": [
+	"name" : "marshal/marshal",
+	"description" : "Bootstrap a Marshal application",
+	"type" : "library",
+	"license" : "AGPL-3.0-or-later",
+	"autoload" : {
+		"psr-4" : {
+			"Marshal\\" : "src/"
+		}
+	},
+	"authors" : [{
+			"name" : "Collins Pamba",
+			"email" : "collinspamba@outlook.com"
+		}
+	],
+	"config" : {
+		"sort-packages" : true
+	},
+	"minimum-stability" : "dev",
+	"prefer-stable" : true,
+	"repositories" : [
         {
-            "name": "Collins Pamba",
-            "email": "collinspamba@outlook.com"
-        }
-    ],
-    "config": {
-        "sort-packages": true
-    },
-    "require": {
-        "php": ">=8.4",
-        "ext-intl": "*",
-        "ext-mbstring": "*",
-        "laminas/laminas-config-aggregator": "^1.19",
-        "marshal/contentmanager": "0.0.3",
-        "marshal/eventmanager": "0.0.2",
-        "marshal/platform": "^0.0.1",
-        "marshal/server": "^0.0.1",
-        "mezzio/mezzio-fastroute": "^3.14",
-        "mezzio/mezzio-helpers": "^5.20",
-        "twig/twig": "^3.22"
-    }
+			"type" : "path",
+			"url" : "../development"
+		},
+        {
+			"type" : "path",
+			"url" : "../python"
+		}
+	],
+	"require" : {
+		"ext-intl": "*",
+		"ext-mbstring": "*",
+		"doctrine/dbal": "^4.4",
+		"guzzlehttp/guzzle": "^7.10",
+		"laminas/laminas-config-aggregator": "^1.19",
+		"laminas/laminas-diactoros": "^3.8",
+		"laminas/laminas-httphandlerrunner": "^2.13",
+		"laminas/laminas-inputfilter": "^2.35",
+		"laminas/laminas-stratigility": "^4.3",
+		"league/flysystem": "^3.33",
+		"loophp/collection": "^7.6",
+		"marshal/python-bridge": "dev-master",
+		"mezzio/mezzio-fastroute": "^3.14",
+		"mezzio/mezzio-helpers": "^5.20",
+		"monolog/monolog": "^3.10",
+		"psr/event-dispatcher": "^1.0",
+		"starfederation/datastar-php": "^1.0",
+		"symfony/console": "^8.0",
+		"twig/twig": "^3.22"
+	},
+	"require-dev" : {
+		"marshal/development" : "dev-main"
+	}
 }

@@ -9,45 +9,16 @@ use Laminas\HttpHandlerRunner\Exception\EmitterException;
 use Psr\Http\Message\ResponseInterface;
 
 /**
- * Emits a {@see SseResponse} to the SAPI output.
+ * Emits a {@see \Marshal\Server\Response\SseResponse} to the SAPI output.
  *
  * This is the sole class responsible for writing SSE data to the wire.
- * {@see SseResponse} is a pure data container that queues {@see \YourApp\Http\SseEvent}
+ * {@see \Marshal\Server\Response\SseResponse} is a pure data container that queues {@see \Marshal\Server\Response\SseEvent}
  * objects; this emitter drains that queue, serialises each event, and streams
  * it to the client with an immediate flush after every write.
- *
- * Responsibilities (in order):
- *  1. Guard — reject non-SseResponse instances and assert no prior output.
- *  2. Runtime — disable buffering/compression, extend the time limit.
- *  3. Headers — send HTTP status line and all response headers via header().
- *  4. Buffer drain — remove any existing PHP output-buffer levels.
- *  5. Event loop — iterate getEvents(), write each serialised event to
- *     php://output via SseStream, flush after each one, and honour
- *     connection_aborted() so the loop exits cleanly on client disconnect.
- *  6. Close comment — append a final ": stream-close" comment and close
- *     the output stream.
- *  7. Body sync — write the full serialised payload into the response's
- *     SseBufferStream so middleware that reads getBody() sees the content.
  *
  * Non-SseResponse instances return `false` immediately, allowing an
  * {@see \Laminas\HttpHandlerRunner\Emitter\EmitterStack} to fall through
  * to the next emitter (e.g. SapiEmitter) for ordinary responses.
- *
- * Usage with EmitterStack:
- *
- *   $stack = new EmitterStack();
- *   $stack->push(new SapiEmitter());   // fallback for regular responses
- *   $stack->push(new SseEmitter());    // handles SseResponse first
- *   $stack->emit($response);
- *
- * Usage standalone:
- *
- *   $response = (new SseResponse())
- *       ->withEvent(SseEvent::create('hello', event: 'greet'))
- *       ->withEvent(SseEvent::fromJson(['count' => 1], event: 'tick'))
- *       ->withEvent(SseEvent::comment('keep-alive'));
- *
- *   (new SseEmitter())->emit($response);
  */
 final class SseResponseEmitter implements EmitterInterface
 {
@@ -71,7 +42,7 @@ final class SseResponseEmitter implements EmitterInterface
     /**
      * Emit the SSE response.
      *
-     * Returns `false` for non-{@see SseResponse} instances so that an
+     * Returns `false` for non-{@see \Marshal\Server\Response\SseResponse} instances so that an
      * {@see \Laminas\HttpHandlerRunner\Emitter\EmitterStack} can pass the
      * response to the next emitter in the stack.
      *

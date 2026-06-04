@@ -1,0 +1,32 @@
+<?php
+
+use Tracy\Debugger;
+
+Debugger::enable();
+
+return [
+    "dependencies" => [
+        "factories" => [
+            \Marshal\Development\Listener\RepositoryEventsListener::class => \Marshal\Development\Listener\RepositoryEventsListenerFactory::class,
+        ],
+    ],
+    "events" => [
+        'listeners' => [
+            \Marshal\Development\Listener\RepositoryEventsListener::class => [
+                \Marshal\Database\Event\Content\CreateQueryEvent::class => [
+                    'listener' => 'onCreateQueryEvent',
+                ],
+            ],
+        ],
+    ],
+    "loggers" => [
+        "marshal::development" => [
+            'handlers' => [
+                \Monolog\Handler\ErrorLogHandler::class => [],
+            ],
+            'processors' => [
+                \Monolog\Processor\PsrLogMessageProcessor::class => [],
+            ],
+        ],
+    ],
+];

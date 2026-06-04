@@ -13,7 +13,7 @@ use Marshal\EventManager\EventDispatcher;
 // load configuration
 $global = require __DIR__ . '/config.php';
 
-// $mergedConfig = [];
+$mergedConfig = [];
 foreach ($global['apps'] ?? [] as $appConfigFile) {
     $appConfig = require $appConfigFile;
     $mergedConfig = ArrayUtils::mergeArray($global, $appConfig);

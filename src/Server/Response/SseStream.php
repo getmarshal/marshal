@@ -25,8 +25,8 @@ use Psr\Http\Message\StreamInterface;
  *
  * Lifecycle:
  *   - Instantiated by {@see SseResponse} as the PSR-7 body placeholder.
- *   - {@see \YourApp\Http\Emitter\SseEmitter} calls write() + flush() for
- *     each serialised {@see SseEvent} during emission.
+ *   - {@see \Marshal\Server\Response\SseEmitter} calls write() + flush() for
+ *     each serialised {@see \Marshal\Server\Response\SseEvent} during emission.
  *   - After emission, middleware may call getContents() / read() / rewind()
  *     on the same instance to inspect the full body.
  */
@@ -75,14 +75,14 @@ class SseStream implements StreamInterface
             return;
         }
 
-        while (ob_get_level() > 0) {
-            ob_end_flush();
+        while (\ob_get_level() > 0) {
+            \ob_end_flush();
         }
 
-        flush();
+        \flush();
 
-        if (is_resource($this->resource)) {
-            fflush($this->resource);
+        if (\is_resource($this->resource)) {
+            \fflush($this->resource);
         }
     }
 
@@ -100,7 +100,7 @@ class SseStream implements StreamInterface
         $this->assertOpen();
 
         // 1. Forward to php://output (live client delivery).
-        $bytes = fwrite($this->resource, $string);
+        $bytes = \fwrite($this->resource, $string);
 
         if ($bytes === false) {
             throw new RuntimeException('Failed to write to SseStream.');
@@ -108,7 +108,7 @@ class SseStream implements StreamInterface
 
         // 2. Append to in-memory buffer (PSR-7 readback).
         $this->buffer   .= $string;
-        $this->position += strlen($string);
+        $this->position += \strlen($string);
 
         return $bytes;
     }
@@ -124,15 +124,15 @@ class SseStream implements StreamInterface
 
     public function isReadable(): bool
     {
-        return !$this->closed;
+        return ! $this->closed;
     }
 
     public function read(int $length): string
     {
         $this->assertOpen();
 
-        $chunk          = substr($this->buffer, $this->position, $length);
-        $this->position += strlen($chunk);
+        $chunk          = \substr($this->buffer, $this->position, $length);
+        $this->position += \strlen($chunk);
 
         return $chunk;
     }
@@ -141,8 +141,8 @@ class SseStream implements StreamInterface
     {
         $this->assertOpen();
 
-        $contents       = substr($this->buffer, $this->position);
-        $this->position = strlen($this->buffer);
+        $contents       = \substr($this->buffer, $this->position);
+        $this->position = \strlen($this->buffer);
 
         return $contents;
     }
@@ -158,14 +158,14 @@ class SseStream implements StreamInterface
 
     public function isSeekable(): bool
     {
-        return !$this->closed;
+        return ! $this->closed;
     }
 
     public function seek(int $offset, int $whence = SEEK_SET): void
     {
         $this->assertOpen();
 
-        $length = strlen($this->buffer);
+        $length = \strlen($this->buffer);
 
         $this->position = match ($whence) {
             SEEK_SET => $offset,
@@ -190,8 +190,8 @@ class SseStream implements StreamInterface
 
     public function close(): void
     {
-        if ($this->resource !== null && is_resource($this->resource)) {
-            fclose($this->resource);
+        if ($this->resource !== null && \is_resource($this->resource)) {
+            \fclose($this->resource);
         }
 
         $this->resource = null;
@@ -209,13 +209,13 @@ class SseStream implements StreamInterface
 
     public function eof(): bool
     {
-        return $this->closed || $this->position >= strlen($this->buffer);
+        return $this->closed || $this->position >= \strlen($this->buffer);
     }
 
     public function getSize(): ?int
     {
         // Returns the number of bytes buffered so far; grows with each write.
-        return strlen($this->buffer);
+        return \strlen($this->buffer);
     }
 
     public function tell(): int
@@ -227,11 +227,11 @@ class SseStream implements StreamInterface
 
     public function getMetadata(?string $key = null): mixed
     {
-        if ($this->resource === null || !is_resource($this->resource)) {
+        if ($this->resource === null || ! \is_resource($this->resource)) {
             return $key !== null ? null : [];
         }
 
-        $meta = stream_get_meta_data($this->resource);
+        $meta = \stream_get_meta_data($this->resource);
 
         return $key !== null ? ($meta[$key] ?? null) : $meta;
     }

@@ -4,27 +4,25 @@ declare(strict_types=1);
 
 namespace Marshal\Database\Schema;
 
+use Doctrine\DBAL\Schema\SchemaDiff;
 use Marshal\Database\Query\Create;
 use Marshal\Database\Query\Select;
 use Marshal\Database\Query\Update;
 
 final class Migration extends Content
 {
-    public const string MIGRATION_ID = "database::migration-id";
-    public const string MIGRATION_NAME = "database:migration-name";
     public const string MIGRATION_DATABASE = "database::migration-db";
     public const string MIGRATION_DIFF = "database::migration-diff";
     public const string MIGRATION_STATUS = "database::migration-status";
-    public const string MIGRATION_TAG = "database::migration-tag";
-    public const string MIGRATION_CREATEDAT = "database::migration-createdat";
-    public const string MIGRATION_UPDATEDAT = "database::migration-updatedat";
 
-    public function getCreatedAt(): \DateTimeImmutable
+    public static function fetch(string $name): self
     {
-        return $this->getProperty(self::MIGRATION_CREATEDAT)->getValue();
+        return Select::from(self::class)
+            ->where(Content::NAME, $name)
+            ->fetch();
     }
 
-    public function getDatabase(): string
+    public function getMigrationDatabase(): string
     {
         return $this->getProperty(self::MIGRATION_DATABASE)->getValue();
     }
@@ -41,7 +39,7 @@ final class Migration extends Content
             throw new \RuntimeException(\sprintf(
                 "Could not unserialize diff for migration %s",
                 $this->getName()
-                ));
+            ));
         }
 
         return $diff;
@@ -49,22 +47,12 @@ final class Migration extends Content
 
     public function getName(): ?string
     {
-        return $this->getProperty(self::MIGRATION_NAME)->getValue();
+        return $this->getProperty(Content::NAME)->getValue();
     }
 
     public function getStatus(): ?bool
     {
         return $this->getProperty(self::MIGRATION_STATUS)->getValue();
-    }
-
-    public function getTag(): string
-    {
-        return $this->getProperty(self::MIGRATION_TAG)->getValue();
-    }
-
-    public function getUpdatedAt(): ?\DateTimeImmutable
-    {
-        return $this->getProperty(self::MIGRATION_UPDATEDAT)->getValue();
     }
 
     public function isEmpty(): bool
@@ -76,27 +64,22 @@ final class Migration extends Content
     {
         Update::target($this)->withValues([
             self::MIGRATION_STATUS => true,
-            self::MIGRATION_UPDATEDAT => new \DateTimeImmutable(timezone: new \DateTimeZone('UTC')),
+            Content::UPDATED_AT => new \DateTimeImmutable(timezone: new \DateTimeZone('UTC')),
         ])->execute();
-    }
 
-    public static function get(string $name): self
-    {
-        return Select::from(self::class)
-            ->where(self::MIGRATION_NAME, $name)
-            ->fetch();
+        return $this;
     }
 
     public static function getMigrations(): array
     {
         return Select::from(self::class)
-        ->orderBy(self::MIGRATION_CREATEDAT, 'DESC')
-        ->fetchAllAssociative();
+            ->orderBy(Content::CREATED_AT, 'DESC')
+            ->fetchAllAssociative();
     }
 
     public static function nameExists(string $name): bool
     {
-        $migration = self::get($name);
+        $migration = self::fetch($name);
         return $migration->isEmpty() ? false : true;
     }
 

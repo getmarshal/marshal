@@ -2,23 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Marshal\Scheduler\Handler;
+namespace Marshal\Authentication\Handler\Settings\Extensions;
 
 use Marshal\Platform\PlatformInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-final class TasksDashboardHandler implements RequestHandlerInterface
+final class ExtensionsDashboard implements RequestHandlerInterface
 {
-    public const string DASHBOARD_HANDLER = "marshal::tasks-dashboard";
-    public const string TEMPLATE_TASKS_DASHBOARD = "marshal::tasks-dashboard";
+    public const string ROUTE_NAME = "marshal::extensions-dashboard";
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $platform = $request->getAttribute(PlatformInterface::class);
         \assert($platform instanceof PlatformInterface);
 
-        return $platform->formatResponse($request, template: self::TEMPLATE_TASKS_DASHBOARD);
+        return $platform->formatResponse($request);
     }
 }

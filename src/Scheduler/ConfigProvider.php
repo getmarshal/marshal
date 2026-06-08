@@ -9,7 +9,8 @@ final class ConfigProvider
     public function __invoke(): array
     {
         return [
-            "depdendencies" => $this->getDependencies(),
+            "dependencies" => $this->getDependencies(),
+            "navigation" => $this->getRoutesConfig(),
             "schema" => $this->getSchemaConfig(),
         ];
     }
@@ -21,6 +22,7 @@ final class ConfigProvider
                 TransportInterface::class                     => Transport\DatabaseTransport::class,
             ],
             "factories" => [
+                TaskRunner::class                             => TaskRunnerFactory::class,
                 Transport\DatabaseTransport::class            => \Laminas\ServiceManager\Factory\InvokableFactory::class,
             ],
         ];
@@ -34,9 +36,6 @@ final class ConfigProvider
                     "methods" => ["GET"],
                     "middleware" => Handler\TasksDashboardHandler::class,
                     "name" => Handler\TasksDashboardHandler::DASHBOARD_HANDLER,
-                    "options" => [
-                        "template" => "marshal::tasks-dashboard",
-                    ],
                 ],
             ],
         ];
@@ -104,5 +103,10 @@ final class ConfigProvider
                 ],
             ],
         ];
+    }
+
+    private function getTemplatesConfig(): array
+    {
+        return [];
     }
 }

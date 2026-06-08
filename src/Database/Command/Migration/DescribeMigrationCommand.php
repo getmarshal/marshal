@@ -38,7 +38,7 @@ final class DescribeMigrationCommand extends Command
 
         // get the migration
         $name = $input->getOption('name');
-        $migration = Migration::get($name);
+        $migration = Migration::fetch($name);
         if ($migration->isEmpty()) {
             $io->error(\sprintf("Migration %s not found", $name));
             return Command::FAILURE;
@@ -48,11 +48,11 @@ final class DescribeMigrationCommand extends Command
         $diff = $migration->getMigrationDiff();
 
         // get the statements
-        $connection = DatabaseManager::getConnection($migration->getDatabase());
+        $connection = DatabaseManager::getConnection($migration->getMigrationDatabase());
         $statements = $connection->getDatabasePlatform()->getAlterSchemaSQL($diff);
 
         // display the statements
-        $io->info("Database: {$migration->getDatabase()}");
+        $io->info("Database: {$migration->getMigrationDatabase()}");
         $io->info($statements);
 
         return Command::SUCCESS;

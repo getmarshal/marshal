@@ -6,6 +6,7 @@ namespace Marshal\Database\Command\Migration;
 
 use Marshal\Database\DatabaseManager;
 use Marshal\Database\Event\Migration\GenerateMigrationEvent;
+use Marshal\Database\Schema\Content;
 use Marshal\Database\Schema\Migration;
 use Marshal\Utils\Trait\CommandInputValidatorTrait;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -89,7 +90,7 @@ class GenerateMigrationCommand extends Command
 
         // save the migration
         $migration = Migration::save([
-            Migration::MIGRATION_NAME => $name,
+            Content::NAME => $name,
             Migration::MIGRATION_DATABASE => $database,
             Migration::MIGRATION_DIFF => \serialize($diff),
         ]);

@@ -31,7 +31,7 @@ trait OrderBy
                     LoggerManager::get()->warning(\sprintf(
                         "Invalid order by expression %s: Type %s has no property %s",
                         $identifier,
-                        $this->type->getIdentifier(),
+                        $this->content->getSchemaIdentifier(),
                         $identifier
                     ));
                     continue;

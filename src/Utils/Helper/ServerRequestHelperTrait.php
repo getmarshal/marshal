@@ -6,6 +6,8 @@ namespace Marshal\Utils\Helper;
 
 use Psr\Http\Message\ServerRequestInterface;
 use Marshal\Platform\PlatformInterface;
+use PSR7Sessions\Storageless\Http\SessionMiddleware;
+use PSR7Sessions\Storageless\Session\SessionInterface;
 
 trait ServerRequestHelperTrait
 {
@@ -15,5 +17,10 @@ trait ServerRequestHelperTrait
         \assert($platform instanceof PlatformInterface);
 
         return $platform;
+    }
+
+    private function getSession(ServerRequestInterface $request): SessionInterface
+    {
+        return $request->getAttribute(SessionMiddleware::SESSION_ATTRIBUTE);
     }
 }

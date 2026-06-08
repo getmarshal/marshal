@@ -35,7 +35,7 @@ final class RollbackMigrationCommand extends Command
 
         // get details
         $name = $input->getOption('name');
-        $migration = Migration::get($name);
+        $migration = Migration::fetch($name);
         if ($migration->isEmpty()) {
             $io->error("Migration $name not found");
             return Command::FAILURE;

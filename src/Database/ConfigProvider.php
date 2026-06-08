@@ -208,22 +208,6 @@ final class ConfigProvider
                 "type" => "datetimetz_immutable",
                 "index" => true,
             ],
-            Schema\Migration::MIGRATION_ID => [
-                "autoincrement" => true,
-                "description" => "Autoincrementing integer ID",
-                "label" => "Migration ID",
-                "name" => "id",
-                "notnull" => true,
-                "type" => Types::BIGINT,
-            ],
-            Schema\Migration::MIGRATION_CREATEDAT => [
-                "label" => "Migration Created At",
-                "description" => "Migration creation timestamp",
-                "default" => static fn (): \DateTimeImmutable => new \DateTimeImmutable(timezone: new \DateTimeZone('UTC')),
-                "name" => "created_at",
-                "type" => Types::DATETIMETZ_IMMUTABLE,
-                "notnull" => true,
-            ],
             Schema\Migration::MIGRATION_DATABASE => [
                 "label" => "Migration DB",
                 "description" => "Database name migration belongs to",
@@ -241,14 +225,6 @@ final class ConfigProvider
                 "notnull" => true,
                 "type" => Types::BLOB,
             ],
-            Schema\Migration::MIGRATION_NAME => [
-                "label" => "Migration Name",
-                "description" => "Given name for a migration",
-                "name" => "name",
-                "notnull" => true,
-                "type" => Types::STRING,
-                "length" => 255,
-            ],
             Schema\Migration::MIGRATION_STATUS => [
                 "label" => "Migration Status",
                 "description" => "Migration status indicator",
@@ -257,25 +233,6 @@ final class ConfigProvider
                 "notnull" => true,
                 "default" => false,
                 "index" => true,
-            ],
-            Schema\Migration::MIGRATION_TAG => [
-                "constraints" => [
-                    "unique" => true,
-                ],
-                "default" => static fn(): string => Random::generateTag(),
-                "description" => "Unique tag for a migration",
-                "index" => true,
-                "label" => "Migration Tag",
-                "name" => "tag",
-                "notnull" => true,
-                "type" => Types::STRING,
-                "length" => 255,
-            ],
-            Schema\Migration::MIGRATION_UPDATEDAT => [
-                "label" => "Migration Updated At",
-                "description" => "Migration updated at timestamp",
-                "name" => "updated_at",
-                "type" => Types::DATETIMETZ_IMMUTABLE,
             ],
         ];
     }

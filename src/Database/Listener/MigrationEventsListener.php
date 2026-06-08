@@ -7,13 +7,13 @@ namespace Marshal\Database\Listener;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Schema\Table;
 use Marshal\Database\DatabaseManager;
-use Marshal\Database\Migration;
-use Marshal\Database\Migration\Event\GenerateMigrationEvent;
-use Marshal\Database\Migration\Event\RollbackMigrationEvent;
-use Marshal\Database\Migration\Event\RunMigrationEvent;
-use Marshal\Database\Migration\Event\SetupMigrationsEvent;
-use Marshal\Database\Schema\Type;
-use Marshal\Database\Schema\TypeManager;
+use Marshal\Database\Event\Migration\GenerateMigrationEvent;
+use Marshal\Database\Event\Migration\RollbackMigrationEvent;
+use Marshal\Database\Event\Migration\RunMigrationEvent;
+use Marshal\Database\Event\Migration\SetupMigrationsEvent;
+use Marshal\Database\Schema\Content;
+use Marshal\Database\Schema\ContentManager;
+use Marshal\Database\Schema\Migration;
 use Marshal\Utils\Config;
 use Marshal\Utils\Logger\LoggerManager;
 
@@ -26,11 +26,11 @@ final class MigrationEventsListener
         $dbalSchema = $connection->createSchemaManager();
         if ($event->isTypeMigration()) {
             $schema = new Schema();
-            $type = TypeManager::get($event->getTypeIdentifier());
+            $type = ContentManager::get($event->getTypeIdentifier());
 
             // migrations for a new type
             if (! $dbalSchema->tableExists($type->getTable())) {
-                $this->buildDatabaseType($schema, $type);
+                $this->buildDatabaseTable($schema, $type);
                 $event->setDiff($dbalSchema->createComparator()->compareSchemas(new Schema(), $schema));
                 return;
             }
@@ -38,7 +38,7 @@ final class MigrationEventsListener
             // migrations for an existing type
             foreach ($dbalSchema->introspectSchema()->getTables() as $table) {
                 if ($table->getName() === $type->getTable()) {
-                    $this->buildDatabaseType($schema, $type);
+                    $this->buildDatabaseTable($schema, $type);
                     $event->setDiff($dbalSchema->createComparator()->compareSchemas(new Schema([$table]), $schema));
                     return;
                 }
@@ -58,7 +58,7 @@ final class MigrationEventsListener
                     continue;
                 }
 
-                $definitions[$name] = TypeManager::get($name);
+                $definitions[$name] = ContentManager::get($name);
             }
 
             // generate the schema diff
@@ -78,7 +78,7 @@ final class MigrationEventsListener
         $migration = $event->getMigration();
 
         // prepare target database
-        $connection = DatabaseManager::getConnection($migration->getDatabase());
+        $connection = DatabaseManager::getConnection($migration->getMigrationDatabase());
 
         // get migration statements
         $diff = $migration->getMigrationDiff();
@@ -115,13 +115,13 @@ final class MigrationEventsListener
 
     public function onSetupMigrationsEvent(SetupMigrationsEvent $event): void
     {
-        $type = TypeManager::get(Migration::class);
+        $content = ContentManager::get(Migration::class);
         $connection = DatabaseManager::getConnection(Migration::class);
-        $table = $this->buildDatabaseType(new Schema(), $type);
+        $table = $this->buildDatabaseTable(new Schema(), $content);
         $connection->createSchemaManager()->createTable($table);
     }
 
-    private function buildDatabaseType(Schema $schema, Type $type): Table
+    private function buildDatabaseTable(Schema $schema, Content $type): Table
     {
         $table = $schema->createTable($type->getTable());
         foreach ($type->getProperties() as $property) {
@@ -197,12 +197,12 @@ final class MigrationEventsListener
     private function buildContentSchema(array $definition): Schema
     {
         $schema = new Schema();
-        foreach ($definition as $type) {
-            if (! $type instanceof Type) {
+        foreach ($definition as $content) {
+            if (! $content instanceof Content) {
                 continue;
             }
 
-            $this->buildDatabaseType($schema, $type);
+            $this->buildDatabaseTable($schema, $content);
         }
 
         return $schema;

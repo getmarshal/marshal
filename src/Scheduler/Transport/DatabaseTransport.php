@@ -23,7 +23,7 @@ final class DatabaseTransport implements TransportInterface
         // @todo apply checks whether task should be saved
 
         try {
-            Create::fromObject($task);
+            Create::target($task);
         } catch (\Throwable $e) {
             LoggerManager::get()->error($e->getMessage());
             return false;

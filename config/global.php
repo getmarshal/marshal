@@ -23,6 +23,17 @@ return [
             ],
             "path" => __DIR__ . "/../data/scheduler.sqlite",
         ],
+        "marshal::user" => [
+            "label" => "User",
+            "system" => true,
+            "tag" => "user",
+            "driver" => "pdo_sqlite",
+            "driverOptions" => [
+                \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
+                \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
+            ],
+            "path" => __DIR__ . "/../data/user.sqlite",
+        ],
     ],
     "system" => [
         "directories" => [

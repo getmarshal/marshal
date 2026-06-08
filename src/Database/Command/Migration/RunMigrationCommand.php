@@ -47,7 +47,7 @@ final class RunMigrationCommand extends Command
         $name = $input->getOption('name');
 
         // get the migration
-        $migration = Migration::get($name);
+        $migration = Migration::fetch($name);
         if ($migration->isEmpty()) {
             $io->error("Migration $name not found");
             return Command::FAILURE;

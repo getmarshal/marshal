@@ -36,11 +36,6 @@ class Content
         $this->relations[$relation->getIdentifier()] = $relation;
     }
 
-    public function getAlias(): ?string
-    {
-        return $this->getPropertyValue(self::ALIAS);
-    }
-
     public function getAutoIncrement(): Property
     {
         foreach ($this->getProperties() as $property) {
@@ -62,11 +57,6 @@ class Content
         return $this->config->getDatabase();
     }
 
-    public function getDescription(): ?string
-    {
-        return $this->getPropertyValue(self::DESCRIPTION);
-    }
-
     public function getHandler(): ?string
     {
         return $this->config->getHandler();
@@ -80,11 +70,6 @@ class Content
     public function getId(): int
     {
         return $this->getPropertyValue(self::ID);
-    }
-
-    public function getImage(): ?string
-    {
-        return $this->getPropertyValue(self::IMAGE);
     }
 
     public function getName(): ?string
@@ -168,11 +153,6 @@ class Content
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->getPropertyValue(self::UPDATED_AT);
-    }
-
-    public function getUrl(): ?string
-    {
-        return $this->getPropertyValue(self::URL);
     }
 
     public function hasProperty(string $identifier): bool

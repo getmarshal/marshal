@@ -61,9 +61,10 @@ final class Create extends AbstractQuery
         return new self($content);
     }
 
-    public static function fromObject(Content $target): static
+    public static function target(Content $target): object
     {
-        return new self($target);
+        $create = new self($target);
+        return $create->execute();
     }
 
     protected function prepare(): QueryBuilder

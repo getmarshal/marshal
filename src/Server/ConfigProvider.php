@@ -46,6 +46,8 @@ final class ConfigProvider
     {
         return [
             \Marshal\Platform\Middleware\DetectPlatformMiddleware::class,
+            \PSR7Sessions\Storageless\Http\SessionMiddleware::class,
+            \Marshal\Authentication\AuthenticationMiddleware::class,
             \Mezzio\Router\Middleware\RouteMiddleware::class,
             \Mezzio\Router\Middleware\MethodNotAllowedMiddleware::class,
             \Mezzio\Router\Middleware\DispatchMiddleware::class,
@@ -61,9 +63,6 @@ final class ConfigProvider
                     "methods" => ["GET"],
                     "middleware" => Handler\HomeHandler::class,
                     "name" => Handler\HomeHandler::ROUTE_NAME,
-                    "options" => [
-                        "template" => "marshal::home",
-                    ],
                 ],
             ],
         ];
@@ -78,7 +77,7 @@ final class ConfigProvider
             "main::layout" => [
                 "filename" => "/main/app/layout.twig.html",
             ],
-            "marshal::home" => [
+            Handler\HomeHandler::TEMPLATE_HOME => [
                 "filename" => "/main/app/home.twig.html",
                 "includes" => ["main::layout"],
             ],

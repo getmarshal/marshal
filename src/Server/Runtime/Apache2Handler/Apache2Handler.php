@@ -47,15 +47,15 @@ class Apache2Handler implements RuntimeInterface
         }
 
         // dispatch the response event
-        try {
-            $this->eventDispatcher->dispatch(new HttpResponseEvent(
-                $request,
-                $response,
-                $request->getAttribute(PlatformInterface::class)
-            ));
-        } catch (\Throwable $e) {
-            LoggerManager::get()->error($e->getMessage());
-        }
+        // try {
+        //     $this->eventDispatcher->dispatch(new HttpResponseEvent(
+        //         $request,
+        //         $response,
+        //         $request->getAttribute(PlatformInterface::class)
+        //     ));
+        // } catch (\Throwable $e) {
+        //     LoggerManager::get()->error($e->getMessage());
+        // }
 
         // emit the response
         // @todo add the stream sapi emitter

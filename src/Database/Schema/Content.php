@@ -47,19 +47,14 @@ class Content
         throw new \InvalidArgumentException("no autoincrement property");
     }
 
+    public function getContentConfig(): ContentConfig
+    {
+        return $this->config;
+    }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->getPropertyValue(self::CREATED_AT);
-    }
-
-    public function getDatabase(): string
-    {
-        return $this->config->getDatabase();
-    }
-
-    public function getHandler(): ?string
-    {
-        return $this->config->getHandler();
     }
 
     public function getSchemaIdentifier(): string
@@ -138,11 +133,6 @@ class Content
     public function getTable(): string
     {
         return $this->config->getTable();
-    }
-
-    public function getValidators(): array
-    {
-        return $this->config->getValidators();
     }
 
     public function getTag(): string

@@ -58,8 +58,8 @@ final class Delete extends AbstractQuery
 
     protected function prepare(): QueryBuilder
     {
-        $queryBuilder = $this->createQueryBuilder($this->content->getDatabase());
-        $queryBuilder->delete($this->content->getTable());
+        $queryBuilder = $this->createQueryBuilder($this->content->getContentConfig()->getDatabase());
+        $queryBuilder->delete($this->content->getContentConfig()->getTable());
         $this->applyWhereExpressions($queryBuilder, $this->content);
 
         return $queryBuilder;

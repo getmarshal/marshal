@@ -48,14 +48,14 @@ final class DatabaseManager
                 ));
             }
 
-            if (! isset($config[$content->getDatabase()])) {
+            if (! isset($config[$content->getContentConfig()->getDatabase()])) {
                 throw new \InvalidArgumentException(\sprintf(
                     "Database connection %s not found in config",
                     $database
                 ));
             }
 
-            $database = $content->getDatabase();
+            $database = $content->getContentConfig()->getDatabase();
         }
 
         // @todo validate db config

@@ -13,7 +13,6 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
 use Lcobucci\JWT\Validation\Constraint\StrictValidAt;
-use Marshal\Utils\Config;
 use Psr\Container\ContainerInterface;
 use PSR7Sessions\Storageless\Http\ClientFingerprint\Configuration as ClientFingerprintConfiguration;
 use PSR7Sessions\Storageless\Http\Configuration;
@@ -31,7 +30,7 @@ final class SessionMiddlewareFactory
 
     public function __invoke(ContainerInterface $container): SessionMiddleware
     {
-        $session = Config::get('session');
+        $session = $container->get('config')['session'];
 
         // get the site's session config
         if (! \is_array($session) || ! isset($session['signature_key'])) {
@@ -39,6 +38,15 @@ final class SessionMiddlewareFactory
                 "Session configuration signature key not found"
             ));
         }
+
+        // prep the JWT config
+        $clock = SystemClock::fromUTC();
+        $jwtConfig = JwtConfig::forSymmetricSigner(new Sha256(), InMemory::base64Encoded($session['signature_key']));
+        $constraints = [
+            new IssuedBy('marshal'),
+            new StrictValidAt($clock),
+            new SignedWith($jwtConfig->signer(), $jwtConfig->verificationKey()),
+        ];
 
         // prep the auth cookie
         $cookie = \array_merge(self::$cookieDefaults, $session['cookie']);
@@ -53,15 +61,6 @@ final class SessionMiddlewareFactory
             ->withHttpOnly($cookie['http_only'] ?? true)
             ->withSameSite($sameSite)
             ->withPath($cookie['path'] ?? '/');
-
-        // prep the JWT config
-        $clock = SystemClock::fromUTC();
-        $jwtConfig = JwtConfig::forSymmetricSigner(new Sha256(), InMemory::base64Encoded($session['signature_key']));
-        $constraints = [
-            new IssuedBy('marshal'),
-            new StrictValidAt($clock),
-            new SignedWith($jwtConfig->signer(), $jwtConfig->verificationKey()),
-        ];
 
         // prep the Storageless session config
         $config = Configuration::fromJwtConfiguration($jwtConfig->withValidationConstraints(...$constraints));

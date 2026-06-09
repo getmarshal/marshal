@@ -58,8 +58,8 @@ class Update extends AbstractQuery
             throw new \RuntimeException("No values to update");
         }
 
-        $queryBuilder = $this->createQueryBuilder($this->content->getDatabase());
-        $queryBuilder->update($this->content->getTable());
+        $queryBuilder = $this->createQueryBuilder($this->content->getContentConfig()->getDatabase());
+        $queryBuilder->update($this->content->getContentConfig()->getTable());
         $this->applyWhereExpressions($queryBuilder, $this->content);
 
         // hydrate the type

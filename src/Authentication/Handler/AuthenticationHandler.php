@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Marshal\Authentication\Handler;
 
-use Laminas\Diactoros\Response\RedirectResponse;
+use Marshal\Authentication\Event\UserLoginEvent;
+use Marshal\Authentication\User\User;
 use Marshal\Authentication\User\UserInterface;
+use Marshal\Database\Schema\ContentManager;
 use Marshal\Platform\PlatformInterface;
 use Marshal\Utils\Helper\ServerRequestHelperTrait;
+use Marshal\Utils\Logger\LoggerManager;
 use Mezzio\Router\RouteResult;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -21,7 +25,7 @@ final class AuthenticationHandler implements RequestHandlerInterface
     public const string HANDLE_LOGOUT = 'auth::logout';
     public const string TEMPLATE_LOGIN_PAGE = "marshal::login-page";
 
-    public function __construct()
+    public function __construct(private EventDispatcherInterface $eventDispatcher)
     {
     }
 
@@ -43,14 +47,27 @@ final class AuthenticationHandler implements RequestHandlerInterface
 
         if ('POST' === \strtoupper($request->getMethod())) {
             // $input = $request->getParsedBody();
+
             $session = $this->getSession($request);
             $session->set(UserInterface::class, [
                 "name" => "root",
             ]);
-            // var_dump($session->get(UserInterface::class));
-            // $session->regenerate();
 
-            return $platform->redirectResponse('/');
+            $user = ContentManager::get(User::class);
+            \assert($user instanceof UserInterface);
+
+            try {
+                $this->eventDispatcher->dispatch(new UserLoginEvent($user));
+            } catch (\Throwable $e) {
+                LoggerManager::get()->error($e->getMessage());
+            }
+
+            $next = "/";
+            if (isset($request->getQueryParams()['next'])) {
+                $next = $request->getQueryParams()['next'];
+            }
+
+            return $platform->redirectResponse($next);
         }
 
         return $platform->formatResponse($request, template: self::TEMPLATE_LOGIN_PAGE);

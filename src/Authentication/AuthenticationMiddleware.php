@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Marshal\Authentication;
 
 use Marshal\Authentication\Handler\AuthenticationHandler;
-use Marshal\Authentication\User\User;
 use Marshal\Authentication\User\UserInterface;
 use Marshal\Utils\Helper\ServerRequestHelperTrait;
 use Mezzio\Helper\UrlHelperInterface;
@@ -47,7 +46,7 @@ final class AuthenticationMiddleware implements MiddlewareInterface
         if (! $user->isLoggedIn()) {
             return $this->unauthenticatedResponse($request, $handler);
         }
-        
+
         return $handler->handle($request->withAttribute(UserInterface::class, $user));
     }
 

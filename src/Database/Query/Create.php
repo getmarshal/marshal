@@ -69,8 +69,8 @@ final class Create extends AbstractQuery
 
     protected function prepare(): QueryBuilder
     {
-        $queryBuilder = $this->createQueryBuilder($this->content->getDatabase());
-        $queryBuilder->insert($this->content->getTable());
+        $queryBuilder = $this->createQueryBuilder($this->content->getContentConfig()->getDatabase());
+        $queryBuilder->insert($this->content->getContentConfig()->getTable());
         foreach ($this->content->getProperties() as $property) {
             if ($property->isAutoIncrement()) {
                 continue;

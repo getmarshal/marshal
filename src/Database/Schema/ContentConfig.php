@@ -15,11 +15,6 @@ final class ContentConfig
         return $this->config['templates']['collection'];
     }
 
-    public function getContentTemplate(): string
-    {
-        return $this->config['templates']['content'];
-    }
-
     public function getDatabase(): string
     {
         return $this->config["database"];
@@ -60,12 +55,27 @@ final class ContentConfig
         return $this->config["validators"] ?? [];
     }
 
+    public function getIndexTemplate(): string
+    {
+        return $this->config['templates']['collection'];
+    }
+
+    public function getViewTemplate(): string
+    {
+        return $this->config['templates']['content'];
+    }
+
     public function hasCollectionTemplate(): bool
     {
         return isset($this->config['templates']['collection']);
     }
 
-    public function hasContentTemplate(): bool
+    public function hasIndexTemplate(): bool
+    {
+        return isset($this->config['templates']['collection']);
+    }
+
+    public function hasViewTemplate(): bool
     {
         return isset($this->config['templates']['content']);
     }

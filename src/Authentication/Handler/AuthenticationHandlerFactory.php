@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Marshal\Authentication\Handler;
 
 use Psr\Container\ContainerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class AuthenticationHandlerFactory
 {
     public function __invoke(ContainerInterface $container): AuthenticationHandler
     {
-        return new AuthenticationHandler();
+        $eventDispatcher = $container->get(EventDispatcherInterface::class);
+        return new AuthenticationHandler($eventDispatcher);
     }
 }

@@ -136,8 +136,8 @@ final class Select extends AbstractQuery
 
     protected function prepare(): QueryBuilder
     {
-        $queryBuilder = $this->createQueryBuilder($this->content->getDatabase());
-        $queryBuilder->from($this->content->getTable(), $this->content->getTable());
+        $queryBuilder = $this->createQueryBuilder($this->content->getContentConfig()->getDatabase());
+        $queryBuilder->from($this->content->getContentConfig()->getTable(), $this->content->getContentConfig()->getTable());
 
         $this->applyDistincts($queryBuilder, $this->content);
         $this->applyProperties($queryBuilder, $this->content);

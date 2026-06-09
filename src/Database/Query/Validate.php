@@ -42,7 +42,7 @@ trait Validate
         }
 
         // chain content level validators
-        $validators = $content->getValidators();
+        $validators = $content->getContentConfig()->getValidators();
         if (! empty($validators)) {
             $chain = $validatorManager->get(ValidatorChain::class);
             \assert($chain instanceof ValidatorChain);

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Marshal\Auth\Event;
+namespace Marshal\Authentication\Event;
 
 use Marshal\Auth\AccountInterface;
 use Marshal\EventManager\ErrorMessagesTrait;

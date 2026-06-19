@@ -5,8 +5,7 @@
 	"license" : "AGPL-3.0-or-later",
 	"autoload" : {
 		"psr-4" : {
-			"Marshal\\" : "src/",
-			"Octo\\Source\\": "apps/octosource/src/"
+			"Marshal\\" : "src/"
 		}
 	},
 	"authors" : [{
@@ -19,19 +18,10 @@
 	},
 	"minimum-stability" : "dev",
 	"prefer-stable" : true,
-	"repositories" : [
-        {
-			"type" : "path",
-			"url" : "../development"
-		},
-        {
-			"type" : "path",
-			"url" : "../python"
-		}
-	],
 	"require" : {
 		"ext-intl": "*",
 		"ext-mbstring": "*",
+		"ext-xml": "*",
 		"doctrine/dbal": "^4.4",
 		"guzzlehttp/guzzle": "^7.10",
 		"laminas/laminas-config-aggregator": "^1.19",
@@ -43,7 +33,7 @@
 		"lcobucci/clock": "^3.6",
 		"league/flysystem": "^3.33",
 		"loophp/collection": "^7.6",
-		"marshal/python-bridge": "dev-master",
+		"marshal/python-bridge": "^0.0.4",
 		"mezzio/mezzio-fastroute": "^3.14",
 		"mezzio/mezzio-helpers": "^5.20",
 		"mezzio/mezzio-session": "^1.17",
@@ -55,7 +45,8 @@
 		"twig/twig": "^3.22"
 	},
 	"require-dev" : {
-		"marshal/development": "dev-main",
-		"phpstan/phpstan": "^2.2"
+		"marshal/development": "v0.0.1",
+		"phpstan/phpstan": "^2.2",
+		"phpunit/phpunit": "^13.2"
 	}
 }

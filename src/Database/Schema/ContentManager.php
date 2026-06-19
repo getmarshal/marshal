@@ -61,7 +61,7 @@ final class ContentManager
         
         // add type properties
         $propsConfig = $schema['properties'] ?? [];
-        $propertyValidator = new Validator\PropertyConfigValidator($propsConfig, $typesConfig);
+        $propertyValidator = new Validator\PropertyConfigValidator($propsConfig);
         foreach ($config['properties'] ?? [] as $propertyIdentifier) {
             if (! isset($propsConfig[$propertyIdentifier])) {
                 throw new Exception\PropertyNotFoundException($propertyIdentifier);

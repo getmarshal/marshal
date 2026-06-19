@@ -45,6 +45,14 @@ final class ConfigProvider
             ],
             "functions" => [
                 [
+                    "name" => "contentForm",
+                    "callable" => [Web\TemplateRenderer\Twig\FormExtension::class, "contentForm"],
+                ],
+                [
+                    "name" => "form",
+                    "callable" => [Web\TemplateRenderer\Twig\FormExtension::class, "form"],
+                ],
+                [
                     "name" => "media",
                     "callable" => [Web\TemplateRenderer\Twig\UrlExtension::class, "media"],
                     "options" => [

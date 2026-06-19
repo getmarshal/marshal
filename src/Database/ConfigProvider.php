@@ -197,7 +197,6 @@ final class ConfigProvider
                 "description" => "Item creation time",
                 "name" => "created_at",
                 "type" => "datetimetz_immutable",
-                "notnull" => true,
                 "index" => true,
             ],
             Content::UPDATED_AT => [
@@ -281,7 +280,7 @@ final class ConfigProvider
                 ],
                 "/content/{schema}/{type}" => [
                     "name" => Handler\ContentSchemaTypeHandler::ROUTE_CONTENT_SCHEMA_TYPE,
-                    "methods" => ["GET", "POST"],
+                    "methods" => ["GET", "POST", "PUT"],
                     "middleware" => Handler\ContentSchemaTypeHandler::class,
                     "options" => [
                         "template" => "marshal::content-schema-type",

@@ -27,7 +27,7 @@ class PropertyConfigValidator extends AbstractValidator
         self::TYPE_NOT_FOUND => "Property type %value% not found in config",
     ];
 
-    public function __construct(private array $config, private array $typesConfig, ?array $options = null)
+    public function __construct(private array $config, ?array $options = null)
     {
         parent::__construct($options);
     }

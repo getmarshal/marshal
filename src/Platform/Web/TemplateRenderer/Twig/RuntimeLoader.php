@@ -37,6 +37,9 @@ class RuntimeLoader implements RuntimeLoaderInterface
                 $assetsVersion = $config['assets_version'] ?? '';
                 return new $class($serverUrlHelper, $urlHelper, $assertsUrl, $assetsVersion, $developmentServer);
 
+            case FormExtension::class:
+                return new FormExtension();
+
             default:
                 return null;
         }

@@ -10,6 +10,7 @@ use starfederation\datastar\enums\EventType;
 use starfederation\datastar\enums\NamespaceType;
 use starfederation\datastar\events\EventInterface;
 use starfederation\datastar\events\ExecuteScript;
+use starfederation\datastar\events\Location;
 use starfederation\datastar\events\PatchElements;
 use starfederation\datastar\events\PatchSignals;
 use starfederation\datastar\events\RemoveElements;
@@ -195,6 +196,11 @@ final class SseEvent
     public static function comment(string $text = ''): self
     {
         return new self(inner: null, commentText: $text, isComment: true);
+    }
+
+    public static function redirect(string $uri, array $options = []): self
+    {
+        return new self(new Location($uri, $options));
     }
 
     // =========================================================================

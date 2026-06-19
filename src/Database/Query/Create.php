@@ -76,7 +76,7 @@ final class Create extends AbstractQuery
                 continue;
             }
 
-            if (true === $property->getNotNull() && null === $property->getValue()) {
+            if (null === $property->getValue() && $property->hasDefault()) {
                 if (\is_callable($property->getDefaultValue())) {
                     $property->setValue(\call_user_func($property->getDefaultValue()));
                 } else {

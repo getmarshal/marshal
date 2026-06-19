@@ -157,6 +157,11 @@ final class Property
         return $this->value;
     }
 
+    public function hasDefault(): bool
+    {
+        return null !== $this->getDefaultValue();
+    }
+
     public function hasDescription(): bool
     {
         return isset($this->comment);

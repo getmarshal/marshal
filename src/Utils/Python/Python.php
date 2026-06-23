@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Marshal\PythonBridge;
+namespace Marshal\Utils\Python;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
@@ -11,7 +11,7 @@ use Marshal\Utils\Logger\LoggerManager;
 
 final class Python
 {
-    private const string DEFAULT_HOST = 'http://localhost:8000';
+    private const string DEFAULT_HOST = 'http://localhost:5000';
 
     public static function run(string $script, array $args = []): string
     {

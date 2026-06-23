@@ -5,7 +5,8 @@
 	"license" : "AGPL-3.0-or-later",
 	"autoload" : {
 		"psr-4" : {
-			"Marshal\\" : "src/"
+			"Marshal\\" : "src/",
+			"Octo\\Source\\": "apps/octosource/src/"
 		}
 	},
 	"authors" : [{
@@ -23,7 +24,7 @@
 		"ext-mbstring": "*",
 		"ext-xml": "*",
 		"doctrine/dbal": "^4.4",
-		"guzzlehttp/guzzle": "^7.10",
+		"guzzlehttp/guzzle": "^7.12",
 		"laminas/laminas-config-aggregator": "^1.19",
 		"laminas/laminas-diactoros": "^3.8",
 		"laminas/laminas-form": "^3.24",
@@ -33,7 +34,6 @@
 		"lcobucci/clock": "^3.6",
 		"league/flysystem": "^3.33",
 		"loophp/collection": "^7.6",
-		"marshal/python-bridge": "^0.0.4",
 		"mezzio/mezzio-fastroute": "^3.14",
 		"mezzio/mezzio-helpers": "^5.20",
 		"mezzio/mezzio-session": "^1.17",
@@ -41,12 +41,22 @@
 		"psr/event-dispatcher": "^1.0",
 		"psr7-sessions/storageless": "^10.2",
 		"starfederation/datastar-php": "^1.0",
-		"symfony/console": "^8.0",
+		"symfony/console": "^8.1",
+		"symfony/string": "^8.1",
 		"twig/twig": "^3.22"
 	},
 	"require-dev" : {
-		"marshal/development": "v0.0.1",
 		"phpstan/phpstan": "^2.2",
 		"phpunit/phpunit": "^13.2"
-	}
+	},
+	"scripts": {
+        "python": [
+            "Composer\\Config::disableProcessTimeout",
+            ". src/Utils/Python/venv/bin/activate && python src/Utils/Python/run.py"
+        ],
+        "hypercorn": [
+            "Composer\\Config::disableProcessTimeout",
+            ". src/Utils/Python/venv/bin/activate && hypercorn src/Utils/Python/run.py"
+        ]
+    }
 }

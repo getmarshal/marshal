@@ -10,6 +10,7 @@ class ConfigProvider
     {
         return [
             "loggers" => $this->getLoggers(),
+            "python" => $this->getPythonConfig(),
         ];
     }
 
@@ -25,6 +26,14 @@ class ConfigProvider
                     \Monolog\Processor\PsrLogMessageProcessor::class => [],
                 ],
             ],
+        ];
+    }
+
+    private function getPythonConfig(): array
+    {
+        return [
+            "paths" => [],
+            "scripts" => [],
         ];
     }
 }

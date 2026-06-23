@@ -1,5 +1,6 @@
 .*
 vendor/
+venv/
 dev.php
 local.php
 *local.php

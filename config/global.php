@@ -40,7 +40,6 @@ return [
             "assets" => __DIR__ . "/../public/static",
             "config" => __DIR__,
             "data" => __DIR__ . "/../data",
-            "templates" => __DIR__ . "/../template",
             "uploads" => __DIR__ . "/../public/uploads",
         ],
     ],

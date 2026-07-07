@@ -25,6 +25,7 @@ final class ConfigProvider
             "input_filters" => [],
             "messages" => $this->getMessagesConfig(),
             "navigation" => $this->getRoutesConfig(),
+            "reports" => [],
             "schema" => $this->getSchemaConfig(),
             "templates" => $this->getTemplates(),
             "validators" => [],
@@ -47,13 +48,14 @@ final class ConfigProvider
     {
         return [
             "factories" => [
-                Command\Migration\GenerateMigrationCommand::class => Command\Migration\GenerateMigrationCommandFactory::class,
-                Command\Migration\RollbackMigrationCommand::class => Command\Migration\RollbackMigrationCommandFactory::class,
-                Command\Migration\RunMigrationCommand::class => Command\Migration\RunMigrationCommandFactory::class,
-                Command\Migration\SetupMigrationsCommand::class => Command\Migration\SetupMigrationsCommandFactory::class,
-                Handler\ContentDashboard::class => Handler\ContentDashboardFactory::class,
+                Command\Migration\GenerateMigrationCommand::class   => Command\Migration\GenerateMigrationCommandFactory::class,
+                Command\Migration\RollbackMigrationCommand::class   => Command\Migration\RollbackMigrationCommandFactory::class,
+                Command\Migration\RunMigrationCommand::class        => Command\Migration\RunMigrationCommandFactory::class,
+                Command\Migration\SetupMigrationsCommand::class     => Command\Migration\SetupMigrationsCommandFactory::class,
+                Handler\ContentDashboard::class                     => Handler\ContentDashboardFactory::class,
                 Handler\ContentSchemaHandler::class                 => Handler\ContentSchemaHandlerFactory::class,
                 Handler\ContentSchemaTypeHandler::class             => Handler\ContentSchemaTypeHandlerFactory::class,
+                Handler\ReportsHandler::class                       => Handler\ReportsHandlerFactory::class,
             ],
             "invokables" => [
                 Command\Migration\DescribeMigrationCommand::class => Command\Migration\DescribeMigrationCommand::class,
@@ -262,29 +264,15 @@ final class ConfigProvider
     {
         return [
             "paths" => [
-                "/content" => [
-                    "name" => Handler\ContentDashboard::ROUTE_DASHBOARD,
+                "/reports" => [
+                    "name" => Handler\ReportsHandler::REPORTS_DASHBOARD,
                     "methods" => ["GET"],
-                    "middleware" => Handler\ContentDashboard::class,
-                    "options" => [
-                        "template" => "marshal::content-dashboard",
-                    ],
+                    "middleware" => Handler\ReportsHandler::class,
                 ],
-                "/content/{schema}" => [
-                    "name" => Handler\ContentSchemaHandler::ROUTE_CONTENT_SCHEMA,
+                "/reports/{schema}/{report}" => [
+                    "name" => Handler\ReportsHandler::SINGLE_REPORT,
                     "methods" => ["GET"],
-                    "middleware" => Handler\ContentSchemaHandler::class,
-                    "options" => [
-                        "template" => "marshal::content-schema",
-                    ],
-                ],
-                "/content/{schema}/{type}" => [
-                    "name" => Handler\ContentSchemaTypeHandler::ROUTE_CONTENT_SCHEMA_TYPE,
-                    "methods" => ["GET", "POST", "PUT"],
-                    "middleware" => Handler\ContentSchemaTypeHandler::class,
-                    "options" => [
-                        "template" => "marshal::content-schema-type",
-                    ],
+                    "middleware" => Handler\ReportsHandler::class,
                 ],
             ],
         ];
@@ -293,16 +281,8 @@ final class ConfigProvider
     private function getTemplates(): array
     {
         return [
-            "marshal::content-dashboard" => [
-                "filename" => "/main/content/dashboard.twig.html",
-                "includes" => ["main::layout"],
-            ],
-            "marshal::content-schema" => [
-                "filename" => "/main/content/schema.twig.html",
-                "includes" => ["main::layout"],
-            ],
-            "marshal::content-schema-type" => [
-                "filename" => "/main/content/schema-type.twig.html",
+            Handler\ReportsHandler::REPORTS_DASHBOARD => [
+                "filename" => __DIR__ . "/../../template/content/reports-dashboard.twig.html",
                 "includes" => ["main::layout"],
             ],
         ];

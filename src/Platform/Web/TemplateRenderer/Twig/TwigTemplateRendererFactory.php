@@ -16,10 +16,8 @@ final class TwigTemplateRendererFactory
         ];
 
         $config = $container->get('config')['twig'] ?? [];
-
         $templatesConfig = $container->get('config')['templates'] ?? [];
-        $templatesDir = $container->get('config')['system']['directories']['templates'];
 
-        return new TwigTemplateRenderer($container, $templatesDir, $config, $twigEnvironmentOptions, $templatesConfig);
+        return new TwigTemplateRenderer($container, $config, $twigEnvironmentOptions, $templatesConfig);
     }
 }

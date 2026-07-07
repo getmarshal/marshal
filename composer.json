@@ -4,20 +4,23 @@
 	"type" : "library",
 	"license" : "AGPL-3.0-or-later",
 	"autoload" : {
+		"classmap": ["apps/*/src"],
 		"psr-4" : {
-			"Marshal\\" : "src/",
-			"Octo\\Source\\": "apps/octosource/src/"
+			"Marshal\\" : "src/"
 		}
 	},
-	"authors" : [{
+	"authors" : [
+		{
 			"name" : "Collins Pamba",
 			"email" : "collinspamba@outlook.com"
 		}
 	],
+	"classmap-authoritative": true,
 	"config" : {
 		"sort-packages" : true
 	},
 	"minimum-stability" : "dev",
+	"optimize-autoloader": true,
 	"prefer-stable" : true,
 	"require" : {
 		"ext-intl": "*",

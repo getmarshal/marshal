@@ -1,0 +1,764 @@
+{% extends "main::layout" %}
+
+{% block breadcrumb %}
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{ path('marshal::home') }}">Home</a></li>
+    <li class="breadcrumb-item breadcrumb-current" aria-current="page">Settings</li>
+</ol>
+{% endblock %}
+
+{% block head %}
+<style>
+    ::selection { background:var(--color-accent); color:#000; }
+
+    ::-webkit-scrollbar { width:5px; height:5px; }
+    ::-webkit-scrollbar-track { background:var(--color-bg); }
+    ::-webkit-scrollbar-thumb { background:var(--color-border); border-radius:99px; }
+
+    /* ── Top bar ── */
+    .topbar {
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .topbar-brand {
+        font-family: var(--font-display);
+        font-weight: var(--font-weight-display);
+        letter-spacing: var(--font-tracking-display);
+        color: var(--color-accent);
+        letter-spacing: .12em;
+    }
+
+    .topbar-brand svg { flex-shrink:0; }
+
+    /* ── Sidebar nav ── */
+    .tab-list {
+        border-right: 1px solid var(--color-border);
+        padding: 28px 0;
+        position: sticky;
+        top: var(--navbar-height);
+        height:calc(100vh - var(--navbar-height));
+        overflow-y: auto;
+    }
+
+    .sidebar-section {
+        margin-bottom: 6px;
+    }
+
+    .sidebar-heading {
+        font-size: .60rem;
+        font-weight: 600;
+        letter-spacing: .14em;
+        text-transform: uppercase;
+        color: var(--color-text-faint);
+        padding: 8px 22px 6px;
+    }
+
+    .sidebar-link {
+        display:flex;
+        align-items:center;
+        gap:10px;
+        padding:9px 22px;
+        font-size:var(--text-sm);
+        color:var(--color-text-muted);
+        cursor:pointer;
+        border-left:2px solid transparent;
+        transition:color .12s, border-color .12s, background .12s;
+        text-decoration:none;
+        user-select:none;
+    }
+    .sidebar-link:hover { color:var(--color-text); background:var(--color-accent-dim); }
+    .sidebar-link.active {
+        color:var(--color-accent);
+        border-left-color:var(--color-accent);
+        background:var(--color-accent-dim);
+    }
+    .sidebar-link svg { flex-shrink:0; opacity:.6; }
+    .sidebar-link.active svg { opacity:1; }
+
+    /* ── Main content ── */
+    .main {
+        padding:44px 52px 80px;
+        overflow-y:auto;
+    }
+
+    @media(max-width:768px) {
+        .page { grid-template-columns:1fr; }
+        .sidebar { display:none; }
+        .main { padding:28px 20px 60px; }
+    }
+
+    /* ══════════════════════════════════════════════════════
+       SECTION SCAFFOLDING
+    ══════════════════════════════════════════════════════ */
+
+    .section-header {
+        margin-bottom:28px;
+        padding-bottom:16px;
+        border-bottom:1px solid var(--color-border);
+    }
+
+    .section-eyebrow {
+        font-family:var(--font-mono);
+        font-size:.60rem;
+        font-weight:600;
+        letter-spacing:.16em;
+        text-transform:uppercase;
+        color:var(--color-accent);
+        margin-bottom:6px;
+    }
+
+    .section-title {
+        font-family:var(--font-display);
+        font-weight:var(--font-weight-display);
+        letter-spacing:var(--font-tracking-display);
+        font-size:var(--text-xl);
+        color:var(--color-text);
+        line-height:1.1;
+        margin-bottom:8px;
+    }
+
+    .section-desc {
+        font-size:var(--text-sm);
+        color:var(--color-text-muted);
+        line-height:1.65;
+    }
+
+    .setting-row {
+        margin-bottom:36px;
+    }
+
+    .setting-label {
+        font-family:var(--font-mono);
+        font-size:.63rem;
+        font-weight:600;
+        letter-spacing:.10em;
+        text-transform:uppercase;
+        color:var(--color-text-muted);
+        margin-bottom:14px;
+        display:flex;
+        align-items:center;
+        gap:8px;
+    }
+
+    .setting-label::after {
+        content:'';
+        flex:1;
+        height:1px;
+        background:var(--color-border);
+    }
+
+    /* ══════════════════════════════════════════════════════
+       COLOR SCHEME CARDS
+    ══════════════════════════════════════════════════════ */
+    .scheme-grid {
+        display:grid;
+        grid-template-columns:repeat(auto-fill,minmax(176px,1fr));
+        gap:10px;
+    }
+
+    .scheme-card {
+        border:2px solid var(--color-border);
+        border-radius:8px;
+        overflow:hidden;
+        cursor:pointer;
+        transition:border-color .15s, transform .15s;
+        background:var(--color-surface-2);
+        user-select:none;
+    }
+    .scheme-card:hover { border-color:var(--color-accent); transform:translateY(-1px); }
+    .scheme-card.active {
+        border-color:var(--color-accent);
+        box-shadow:0 0 0 1px var(--color-accent);
+    }
+
+    /* Mini colour palette preview */
+    .scheme-preview {
+        height:56px;
+        display:flex;
+        position:relative;
+        overflow:hidden;
+    }
+    .scheme-preview-bg   { flex:3; }
+    .scheme-preview-surf { flex:2; }
+    .scheme-preview-accent {
+        position:absolute;
+        right:12px; bottom:10px;
+        width:28px; height:28px;
+        border-radius:50%;
+        box-shadow:0 2px 8px rgba(0,0,0,.4);
+    }
+
+    .scheme-info {
+        padding:10px 12px 12px;
+    }
+    .scheme-name {
+        font-family:var(--font-mono);
+        font-size:.65rem;
+        font-weight:600;
+        letter-spacing:.08em;
+        text-transform:uppercase;
+        color:var(--color-text);
+        margin-bottom:3px;
+    }
+    .scheme-desc {
+        font-size:.68rem;
+        color:var(--color-text-muted);
+        line-height:1.4;
+    }
+
+    .scheme-card.active .scheme-name { color:var(--color-accent); }
+
+    .active-indicator {
+        display:inline-flex;
+        align-items:center;
+        gap:4px;
+        font-family:var(--font-mono);
+        font-size:.58rem;
+        font-weight:600;
+        letter-spacing:.06em;
+        color:var(--color-accent);
+        margin-top:4px;
+        opacity:0;
+        transition:opacity .15s;
+    }
+    .scheme-card.active .active-indicator { opacity:1; }
+
+    /* ══════════════════════════════════════════════════════
+       FONT OPTION ROWS
+    ══════════════════════════════════════════════════════ */
+
+    .font-row {
+        gap:16px;
+        padding:14px 16px;
+        border:1px solid var(--color-border);
+        border-radius:6px;
+        cursor:pointer;
+        background:var(--color-surface);
+        transition:border-color .12s, background .12s;
+        user-select:none;
+    }
+    .font-row:hover { border-color:var(--color-accent); background:var(--color-surface-2); }
+    .font-row.active {
+        border-color:var(--color-accent);
+        background:var(--color-accent-dim);
+    }
+
+    .font-radio {
+        width: 16px; height: 16px;
+        border-radius: 50%;
+        border: 2px solid var(--color-border);
+        flex-shrink: 0;
+        transition:border-color .12s;
+    }
+    .font-row.active .font-radio { border-color:var(--color-accent); }
+    .font-radio-dot {
+        width: 7px; height:7px;
+        border-radius: 50%;
+        background: var(--color-accent);
+        opacity: 0;
+        transition: opacity .12s, transform .12s;
+        transform: scale(.5);
+    }
+    .font-row.active .font-radio-dot { opacity: 1; transform: scale(1); }
+
+    .font-meta {
+        flex: 1;
+        min-width: 0;
+    }
+    .font-row-name {
+        font-size: var(--text-sm);
+        font-weight: 600;
+        color: var(--color-text);
+        margin-bottom: 2px;
+    }
+    .font-row-stack {
+        font-family: var(--font-mono);
+        font-size: .60rem;
+        color: var(--color-text-muted);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .font-tag {
+        flex-shrink: 0;
+        font-family: var(--font-mono);
+        font-size: .56rem;
+        font-weight: 600;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        padding: 2px 7px;
+        border-radius: 99px;
+    }
+    .font-tag-sans    { background:rgba(107,168,255,.12); color:var(--color-info); }
+    .font-tag-serif   { background:rgba(255,200,60,.12);  color:var(--color-warning); }
+    .font-tag-mono    { background:rgba(200,241,53,.10);  color:var(--color-accent); }
+    .font-tag-mixed   { background:rgba(251,45,94,.10);   color:var(--color-danger); }
+
+    /* Live specimen shown in active font row */
+    .font-specimen {
+        font-size:1.1rem;
+        line-height:1;
+        color:var(--color-text-muted);
+        flex-shrink:0;
+        width:90px;
+        text-align:right;
+        overflow:hidden;
+        white-space:nowrap;
+    }
+
+    /* ══════════════════════════════════════════════════════
+       SIZE SELECTOR
+    ══════════════════════════════════════════════════════ */
+    .size-grid {
+        display: grid;
+        grid-template-columns: repeat(3,1fr);
+        gap: 10px;
+    }
+
+    .size-card {
+        border: 2px solid var(--color-border);
+        border-radius: 8px;
+        padding: 18px 16px;
+        cursor: pointer;
+        background: var(--color-surface);
+        transition: border-color .12s, background .12s;
+        user-select: none;
+        text-align: center;
+    }
+    .size-card:hover { border-color:var(--color-accent); }
+    .size-card.active {
+        border-color: var(--color-accent);
+        background: var(--color-accent-dim);
+    }
+
+    .size-letter {
+        font-family: var(--font-display);
+        font-weight: var(--font-weight-display);
+        letter-spacing: var(--font-tracking-display);
+        color: var(--color-text);
+        line-height: 1;
+        margin-bottom: 10px;
+    }
+    .size-card:nth-child(1) .size-letter { font-size: 1.4rem; }
+    .size-card:nth-child(2) .size-letter { font-size: 1.9rem; }
+    .size-card:nth-child(3) .size-letter { font-size: 2.5rem; }
+
+    .size-label {
+        font-family: var(--font-mono);
+        font-size: .62rem;
+        font-weight: 600;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        margin-bottom: 2px;
+    }
+    .size-card.active .size-label { color:var(--color-accent); }
+
+    .size-base {
+        font-family:var(--font-mono);
+        font-size:.58rem;
+        color:var(--color-text-faint);
+    }
+    .size-card.active .size-base { color:var(--color-accent-dim); filter:brightness(2); }
+
+    /* Transition all colour-bearing properties */
+    .scheme-card, .font-row, .size-card,
+    .preview-panel, .preview-h1, .preview-p,
+    .topbar, .sidebar, .main {
+        transition:
+            background-color .22s ease,
+            border-color .22s ease,
+            color .22s ease,
+            box-shadow .22s ease;
+    }
+</style>
+{% endblock %}
+
+{% block main %}
+<main class="container-lg">
+    <div class="section">
+        <div class="tabs tabs-vertical" data-tabs>
+            <div class="tab-list">
+                <div class="sidebar-section">
+                    <a class="sidebar-link tab-trigger" data-tab="about">Profile</a>
+                </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-heading">Appearance</div>
+                    <a class="sidebar-link tab-trigger" data-target="color" data-tab="color-scheme">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.2"/>
+                        <circle cx="4.5" cy="5.5" r="1.2" fill="currentColor"/>
+                        <circle cx="9.5" cy="5.5" r="1.2" fill="currentColor"/>
+                        <circle cx="7" cy="9" r="1.2" fill="currentColor"/>
+                        </svg>
+                        Color Scheme
+                    </a>
+                    <a class="sidebar-link tab-trigger" data-target="font" data-tab="typography">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M2 11L5.5 3L9 11M3.5 8.5H7.5M11 4V11M9.5 4H12.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Typography
+                    </a>
+                </div>
+                <div class="sidebar-section">
+                    <a class="sidebar-link tab-trigger" data-target="font" data-tab="account">
+                        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M2 11L5.5 3L9 11M3.5 8.5H7.5M11 4V11M9.5 4H12.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Account
+                    </a>
+                </div>
+            </div>
+            <div class="tab-panels">
+                <div id="about" class="tab-panel">
+                    <div class="section">
+                        <h1>Profile</h1>
+                    </div>
+                </div>
+                <div id="color-scheme" class="tab-panel">
+                    <div class="section">
+                        <div class="section-header">
+                            <h2 class="section-title">Color Scheme</h2>
+                            <p class="section-desc">Choose a palette</p>
+                        </div>
+                        <div class="setting-row">
+                            <div class="scheme-grid" id="schemeGrid">
+                                <div class="scheme-card active" data-scheme="acid">
+                                    <div class="scheme-preview">
+                                        <div class="scheme-preview-bg"  style="background:#0d0d0d"></div>
+                                        <div class="scheme-preview-surf" style="background:#141414"></div>
+                                        <div class="scheme-preview-accent" style="background:#c8f135"></div>
+                                    </div>
+                                    <div class="scheme-info">
+                                        <div class="scheme-name">Acid</div>
+                                        <div class="scheme-desc">Lime green on near-black</div>
+                                        <div class="active-indicator">
+                                            <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="currentColor"/></svg>
+                                            Active
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="scheme-card" data-scheme="ash">
+                                    <div class="scheme-preview">
+                                        <div class="scheme-preview-bg"  style="background:#0e1117"></div>
+                                        <div class="scheme-preview-surf" style="background:#161b26"></div>
+                                        <div class="scheme-preview-accent" style="background:#7dd3fc"></div>
+                                    </div>
+                                    <div class="scheme-info">
+                                        <div class="scheme-name">Ash</div>
+                                        <div class="scheme-desc">Icy blue on cool slate</div>
+                                        <div class="active-indicator">
+                                            <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="currentColor"/></svg>
+                                            Active
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="scheme-card" data-scheme="ember">
+                                    <div class="scheme-preview">
+                                        <div class="scheme-preview-bg"  style="background:#110e0b"></div>
+                                        <div class="scheme-preview-surf" style="background:#1a1512"></div>
+                                        <div class="scheme-preview-accent" style="background:#f97316"></div>
+                                    </div>
+                                    <div class="scheme-info">
+                                        <div class="scheme-name">Ember</div>
+                                        <div class="scheme-desc">Smoldering orange on warm charcoal</div>
+                                        <div class="active-indicator">
+                                            <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="currentColor"/></svg>
+                                            Active
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="scheme-card" data-scheme="void">
+                                    <div class="scheme-preview">
+                                        <div class="scheme-preview-bg"  style="background:#05050f"></div>
+                                        <div class="scheme-preview-surf" style="background:#0c0c1e"></div>
+                                        <div class="scheme-preview-accent" style="background:#a78bfa"></div>
+                                    </div>
+                                    <div class="scheme-info">
+                                        <div class="scheme-name">Void</div>
+                                        <div class="scheme-desc">Electric violet on deep navy</div>
+                                        <div class="active-indicator">
+                                            <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="currentColor"/></svg>
+                                            Active
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="scheme-card" data-scheme="chalk">
+                                    <div class="scheme-preview">
+                                        <div class="scheme-preview-bg"  style="background:#f4f3ef"></div>
+                                        <div class="scheme-preview-surf" style="background:#ffffff"></div>
+                                        <div class="scheme-preview-accent" style="background:#1a1a1a"></div>
+                                    </div>
+                                    <div class="scheme-info">
+                                        <div class="scheme-name">Chalk</div>
+                                        <div class="scheme-desc">Graphite ink on off-white — light mode</div>
+                                        <div class="active-indicator">
+                                            <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="currentColor"/></svg>
+                                            Active
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="scheme-card" data-scheme="aurora">
+                                    <div class="scheme-preview">
+                                        <div class="scheme-preview-bg"  style="background:#080f0e"></div>
+                                        <div class="scheme-preview-surf" style="background:#0e1614"></div>
+                                        <div class="scheme-preview-accent" style="background:#2dd4bf"></div>
+                                    </div>
+                                    <div class="scheme-info">
+                                        <div class="scheme-name">Aurora</div>
+                                        <div class="scheme-desc">Teal-cyan on dark forest</div>
+                                        <div class="active-indicator">
+                                            <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="currentColor"/></svg>
+                                            Active
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="scheme-card" data-scheme="crimson">
+                                    <div class="scheme-preview">
+                                        <div class="scheme-preview-bg"  style="background:#0f0809"></div>
+                                        <div class="scheme-preview-surf" style="background:#180d0f"></div>
+                                        <div class="scheme-preview-accent" style="background:#fb2d5e"></div>
+                                    </div>
+                                    <div class="scheme-info">
+                                        <div class="scheme-name">Crimson</div>
+                                        <div class="scheme-desc">Vivid rose-red on near-black</div>
+                                        <div class="active-indicator">
+                                            <svg width="8" height="8" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3" fill="currentColor"/></svg>
+                                            Active
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="typography" class="tab-panel">
+                    <section class="section" id="size">
+                        <div class="section-header">
+                            <h2 class="section-title">Type Scale</h2>
+                            <p class="section-desc">Adjusts the entire type scale uniformly</p>
+                        </div>
+
+                        <div class="setting-row" style="margin-bottom:0;">
+                            <div class="setting-label">Select scale</div>
+                            <div class="size-grid" id="sizeGrid">
+
+                            <div class="size-card" data-size="sm">
+                                <div class="size-letter">Ag</div>
+                                <div class="size-label">Small</div>
+                                <div class="size-base">0.80rem base</div>
+                            </div>
+
+                            <div class="size-card" data-size="md">
+                                <div class="size-letter">Ag</div>
+                                <div class="size-label">Medium</div>
+                                <div class="size-base">0.90rem base</div>
+                            </div>
+
+                            <div class="size-card" data-size="lg">
+                                <div class="size-letter">Ag</div>
+                                <div class="size-label">Large</div>
+                                <div class="size-base">1.05rem base</div>
+                            </div>
+
+                            </div>
+                        </div>
+                    </section>
+                    <section class="section" id="font">
+                        <div class="section-header">
+                            <h2 class="section-title">Typeface</h2>
+                            <p class="section-desc">System fonts only — no network requests. Each pairing sets body, display, and monospace stacks independently.</p>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-label">Sans-serif</div>
+                            <div class="flex flex-col gap-x-3">
+                                <div class="font-row flex items-center active" data-font="sans">
+                                    <div class="font-radio flex-center"><div class="font-radio-dot"></div></div>
+                                    <div class="font-meta">
+                                        <div class="font-row-name">System Sans</div>
+                                        <div class="font-row-stack">ui-sans-serif, system-ui, -apple-system, Segoe UI</div>
+                                    </div>
+                                    <span class="font-tag font-tag-sans">Sans</span>
+                                    <div class="font-specimen" style="font-family:ui-sans-serif,system-ui,sans-serif">Aa Bb</div>
+                                </div>
+
+                                <div class="font-row flex items-center" data-font="humanist">
+                                    <div class="font-radio flex-center"><div class="font-radio-dot"></div></div>
+                                    <div class="font-meta">
+                                        <div class="font-row-name">Humanist</div>
+                                        <div class="font-row-stack">Gill Sans, Calibri / display: Optima, Candara</div>
+                                    </div>
+                                    <span class="font-tag font-tag-sans">Sans</span>
+                                    <div class="font-specimen" style="font-family:'Gill Sans','Gill Sans MT',Calibri,Candara,sans-serif">Aa Bb</div>
+                                </div>
+                                <div class="font-row flex items-center" data-font="geometric">
+                                    <div class="font-radio flex-center"><div class="font-radio-dot"></div></div>
+                                    <div class="font-meta">
+                                        <div class="font-row-name">Geometric</div>
+                                        <div class="font-row-stack">Century Gothic, Trebuchet / display: Futura</div>
+                                    </div>
+                                    <span class="font-tag font-tag-sans">Sans</span>
+                                    <div class="font-specimen" style="font-family:'Century Gothic','Trebuchet MS',sans-serif">Aa Bb</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-label">Serif</div>
+                            <div class="font-list">
+
+                            <div class="font-row flex items-center" data-font="serif">
+                                <div class="font-radio flex-center"><div class="font-radio-dot"></div></div>
+                                <div class="font-meta">
+                                    <div class="font-row-name">System Serif</div>
+                                    <div class="font-row-stack">ui-serif, Georgia, Times New Roman</div>
+                                </div>
+                                <span class="font-tag font-tag-serif">Serif</span>
+                                <div class="font-specimen" style="font-family:ui-serif,Georgia,serif">Aa Bb</div>
+                            </div>
+
+                            <div class="font-row flex items-center" data-font="oldstyle">
+                                <div class="font-radio flex-center"><div class="font-radio-dot"></div></div>
+                                <div class="font-meta">
+                                    <div class="font-row-name">Old-style</div>
+                                    <div class="font-row-stack">Palatino, Book Antiqua, Garamond, Georgia</div>
+                                </div>
+                                <span class="font-tag font-tag-serif">Serif</span>
+                                <div class="font-specimen" style="font-family:Palatino,'Palatino Linotype','Book Antiqua',Georgia,serif">Aa Bb</div>
+                            </div>
+
+                            <div class="font-row flex items-center" data-font="slab">
+                                <div class="font-radio flex-center"><div class="font-radio-dot"></div></div>
+                                <div class="font-meta">
+                                    <div class="font-row-name">Slab</div>
+                                    <div class="font-row-stack">Rockwell, Rockwell Nova, DejaVu Serif</div>
+                                </div>
+                                <span class="font-tag font-tag-serif">Serif</span>
+                                <div class="font-specimen" style="font-family:Rockwell,'Rockwell Nova',serif">Aa Bb</div>
+                            </div>
+
+                            </div>
+                        </div>
+
+                        <div class="setting-row">
+                            <div class="setting-label">Monospace &amp; Mixed</div>
+                            <div class="font-list">
+
+                            <div class="font-row flex items-center" data-font="mono">
+                                <div class="font-radio flex-center"><div class="font-radio-dot"></div></div>
+                                <div class="font-meta">
+                                    <div class="font-row-name">Monospace</div>
+                                    <div class="font-row-stack">ui-monospace, Cascadia Code, Fira Code, Consolas</div>
+                                </div>
+                                <span class="font-tag font-tag-mono">Mono</span>
+                                <div class="font-specimen" style="font-family:ui-monospace,'Cascadia Code','Fira Code',Consolas,monospace">Aa Bb</div>
+                            </div>
+
+                            <div class="font-row flex items-center" data-font="editorial">
+                                <div class="font-radio flex-center"><div class="font-radio-dot"></div></div>
+                                <div class="font-meta">
+                                    <div class="font-row-name">Editorial</div>
+                                    <div class="font-row-stack">body: Palatino serif · display: Optima sans</div>
+                                </div>
+                                <span class="font-tag font-tag-mixed">Mixed</span>
+                                <div class="font-specimen" style="font-family:Palatino,'Book Antiqua',Georgia,serif">Aa Bb</div>
+                            </div>
+
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                <div id="account" class="tab-panel">
+                    <section class="section">
+                        <h1>Account</h1>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}
+{% block scripts %}
+<script>
+(function () {
+    'use strict';
+
+    const html = document.documentElement;
+
+    /* ── State ── */
+    const state = {
+        scheme: html.getAttribute('data-scheme'),
+        font:   html.getAttribute('data-font'),
+        size:   html.getAttribute('data-size'),
+    };
+
+    function save() {
+        try { localStorage.setItem('theme-settings', JSON.stringify(state)); } catch (_) {}
+    }
+
+    function init() {
+        // Sync scheme cards
+        document.querySelectorAll('[data-scheme]').forEach(el => {
+        if (!el.classList.contains('scheme-card')) return;
+            el.classList.toggle('active', el.dataset.scheme === state.scheme);
+        });
+
+        // Sync font rows
+        document.querySelectorAll('.font-row').forEach(el => {
+            el.classList.toggle('active', el.dataset.font === state.font);
+        });
+
+        // Sync size cards
+        document.querySelectorAll('.size-card').forEach(el => {
+            el.classList.toggle('active', el.dataset.size === state.size);
+        });
+    }
+
+    /* ── Apply state to <html> ── */
+    function apply() {
+        html.setAttribute('data-scheme', state.scheme);
+        html.setAttribute('data-font',   state.font);
+        html.setAttribute('data-size',   state.size);
+
+        init();
+    }
+
+    /* ── Wire scheme cards ── */
+    document.querySelectorAll('.scheme-card').forEach(card => {
+        card.addEventListener('click', () => {
+            state.scheme = card.dataset.scheme;
+            apply();
+            save();
+        });
+    });
+
+    /* ── Wire font rows ── */
+    document.querySelectorAll('.font-row').forEach(row => {
+        row.addEventListener('click', () => {
+            state.font = row.dataset.font;
+            apply();
+            save();
+        });
+    });
+
+    /* ── Wire size cards ── */
+    document.querySelectorAll('.size-card').forEach(card => {
+        card.addEventListener('click', () => {
+            state.size = card.dataset.size;
+            apply();
+            save();
+        });
+    });
+
+    init();
+
+})();
+</script>
+{% endblock %}

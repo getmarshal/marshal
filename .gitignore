@@ -9,7 +9,6 @@ local.php
 /apps/**
 /public/uploads/**
 /public/static/**
-/template/**
 
 !.gitignore
 !/public/.htaccess
@@ -18,10 +17,6 @@ local.php
 !/data/cache/
 !/public/static/
 !/public/uploads/
-!/template/main/app/*
-!/template/main/content/*
-!/template/main/settings/*
-!/template/main/tasks/*
 
 # module not ready
 Auth/

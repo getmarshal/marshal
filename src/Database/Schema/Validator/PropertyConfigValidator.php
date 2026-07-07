@@ -64,13 +64,15 @@ class PropertyConfigValidator extends AbstractValidator
 
         if (! isset($config['type'])) {
             $this->error(self::TYPE_NOT_FOUND);
+            $this->setValue($config['type']);
             return FALSE;
         }
 
         try {
             Type::getType($config['type']);
         } catch (\Throwable $e) {
-            $this->error($e->getMessage());
+            $this->setValue($config['type']);
+            $this->error(self::TYPE_NOT_FOUND);
             return FALSE;
         }
 

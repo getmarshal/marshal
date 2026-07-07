@@ -177,14 +177,6 @@ final class ConfigProvider
             Handler\AuthenticationHandler::TEMPLATE_LOGIN_PAGE => [
                 "filename" => '/main/user/login.twig.html',
             ],
-            "marshal::extensions-dashboard" => [
-                "filename" => "/main/extensions/dashboard.twig.html",
-                "includes" => ["main::layout"],
-            ],
-            "marshal::settings-dashboard" => [
-                "filename" => "/main/settings/dashboard.twig.html",
-                "includes" => ["main::layout"],
-            ],
             "marshal::profile-dashboard" => [
                 "filename" => "/main/profile/dashboard.twig.html",
                 "includes" => ["main::layout"],

@@ -14,8 +14,12 @@ use Marshal\EventManager\EventDispatcher;
 $global = require __DIR__ . '/config.php';
 
 $mergedConfig = [];
-foreach ($global['apps'] ?? [] as $appConfigFile) {
-    $appConfig = require $appConfigFile;
+foreach ($global['apps'] ?? [] as $appConfig) {
+    if (! isset($appConfig["configFile"])) {
+        continue;
+    }
+
+    $appConfig = require $appConfig["configFile"];
     $mergedConfig = ArrayUtils::mergeArray($global, $appConfig);
 }
 

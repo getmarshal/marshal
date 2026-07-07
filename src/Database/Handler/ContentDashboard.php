@@ -40,6 +40,6 @@ final class ContentDashboard implements RequestHandlerInterface
 
         return $platform->formatResponse($request, [
             'data' => $data,
-        ], "marshal::content-dashboard");
+        ], self::ROUTE_DASHBOARD);
     }
 }

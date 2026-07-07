@@ -50,6 +50,7 @@ final class ConfigProvider
             \Marshal\Authentication\AuthenticationMiddleware::class,
             \Mezzio\Router\Middleware\RouteMiddleware::class,
             \Mezzio\Router\Middleware\MethodNotAllowedMiddleware::class,
+            \Marshal\Apps\Middleware\AppMiddleware::class,
             \Mezzio\Router\Middleware\DispatchMiddleware::class,
             \Marshal\Platform\Middleware\NotFoundResponseMiddleware::class,
         ];
@@ -72,13 +73,13 @@ final class ConfigProvider
     {
         return [
             "marshal::error-404" => [
-                "filename" => "/main/app/error-404.twig.html",
+                "filename" => __DIR__ . "/../../template/main/error-404.twig.html",
             ],
             "main::layout" => [
-                "filename" => "/main/app/layout.twig.html",
+                "filename" => __DIR__ . "/../../template/main/layout.twig.html",
             ],
             Handler\HomeHandler::TEMPLATE_HOME => [
-                "filename" => "/main/app/home.twig.html",
+                "filename" => __DIR__ . "/../../template/main/home.twig.html",
                 "includes" => ["main::layout"],
             ],
         ];

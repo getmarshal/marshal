@@ -16,7 +16,6 @@ class TwigTemplateRenderer implements TemplateRendererInterface
 {
     public function __construct(
         private ContainerInterface $container,
-        private string $templatesDir,
         private array $config = [],
         private array $options = [],
         private array $templatesConfig = []
@@ -59,7 +58,7 @@ class TwigTemplateRenderer implements TemplateRendererInterface
         $dir = \implode('/', $split);
 
         // create the filesystem adapter
-        $filesystem = new Filesystem(new LocalFilesystemAdapter($this->templatesDir . $dir, lazyRootCreation: true));
+        $filesystem = new Filesystem(new LocalFilesystemAdapter($dir, lazyRootCreation: true));
 
         // read the file
         $template = $filesystem->read($filename);

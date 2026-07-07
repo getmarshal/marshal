@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html data-scheme="horisont" data-size="sm">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Marshal | Log in</title>
+        <link href="{{ static('css/button.css') }}" rel="stylesheet">
+        <link href="{{ static('css/forms.css') }}" rel="stylesheet">
+        <link href="{{ static('css/theme.css') }}" rel="stylesheet">
+        <link href="{{ static('css/type.css') }}" rel="stylesheet">
+        <link href="{{ static('css/color-schemes.css') }}" rel="stylesheet">
+        <script type="module" src="{{ static('js/datastar.js') }}"></script>
+        <script src="{{ static('js/theme-switcher.js') }}"></script>
+    </head>
+    {% block body %}
+    <body>
+        <main class="container-lg">
+            <section class="section text-center">
+                <h1>Log in</h1>
+                <form action="" method="post">
+                    <div class="form-group">
+                        <label for="password" class="form-label">Enter your password</label>
+                        <input id="password" type="password" class="form-input" name="password" placeholder="Password" required>
+                    </div>
+                    <button class="btn btn-primary" type="submit">Log in</button>
+                </form>
+            </section>
+        </main>
+        {% block scripts %}{% endblock %}
+    </body>
+    {% endblock %}
+</html>

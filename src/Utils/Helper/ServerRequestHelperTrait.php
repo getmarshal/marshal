@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Marshal\Utils\Helper;
 
+use Mezzio\Router\RouteResult;
 use Psr\Http\Message\ServerRequestInterface;
 use Marshal\Platform\PlatformInterface;
 use PSR7Sessions\Storageless\Http\SessionMiddleware;
@@ -17,6 +18,11 @@ trait ServerRequestHelperTrait
         \assert($platform instanceof PlatformInterface);
 
         return $platform;
+    }
+
+    public function getRouteResult(ServerRequestInterface $request): RouteResult
+    {
+        return $request->getAttribute(RouteResult::class);
     }
 
     private function getSession(ServerRequestInterface $request): SessionInterface
